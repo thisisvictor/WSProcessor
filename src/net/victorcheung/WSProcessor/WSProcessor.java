@@ -67,9 +67,9 @@ public class WSProcessor {
 	public final static String VERSION = "1.0";
 
 	//show debug messages
-	private boolean isDebug = false; 
+	protected boolean isDebug = false; 
 	//the Client object for sending and receiving data to and from the client 
-	private Client myClient;
+	protected Client myClient;
 	//a bunch of parameters of the client
 	String origin, host;
 
@@ -198,11 +198,11 @@ public class WSProcessor {
 	}
 
 	/**
-	 * A private helper method for reading bytes from the client.
+	 * A protected helper method for reading bytes from the client.
 	 *
 	 * @return A byte array containing the data sent from client. It's masked and need {@link decodeMessage(byte[] bArray, byte[] maskingKey)} to decode.
 	 */
-	private byte[] readClientBytes() {
+	protected byte[] readClientBytes() {
 		//read from the client
 		byte[] clientBytes = myClient.readBytes();
 		if(isDebug) System.out.println("Received # of bytes in first round: "+clientBytes.length);
@@ -221,12 +221,12 @@ public class WSProcessor {
 	}
 
 	/**
-	 * A private helper method extracting the Origin of the client.
+	 * A protected helper method extracting the Origin of the client.
 	 *
 	 * @param header The header of decoded message sent from the client.
 	 * @return The Origin field as a String if found, null if not. 
 	 */
-	private String getOrigin(String header) {
+	protected String getOrigin(String header) {
 		//String[] data = split( header, '\n');
 		String[] data = header.split("\n");
 		for (int i=0; i < data.length; i++) {
@@ -238,12 +238,12 @@ public class WSProcessor {
 	}
 
 	/**
-	 * A private helper method extracting the Host of the client.
+	 * A protected helper method extracting the Host of the client.
 	 *
 	 * @param header The header of decoded message sent from the Client.
 	 * @return The Host field as a String if found, null if not. 
 	 */
-	private String getHost(String header) {
+	protected String getHost(String header) {
 		//String[] data = split( header, '\n');
 		String[] data = header.split("\n");
 		for (int i=0; i < data.length; i++) {
@@ -255,11 +255,11 @@ public class WSProcessor {
 	}
 
 	/**
-	 * A private helper method, generates a unique String for the client to accept connection and mask subsequent messages.
+	 * A protected helper method, generates a unique String for the client to accept connection and mask subsequent messages.
 	 *
 	 * @return The unique String, or empty if something is wrong.
 	 */
-	private String procClientHeader(String header) {
+	protected String procClientHeader(String header) {
 		//String[] data = split( header, '\n');
 		String[] data = header.split("\n");
 		
@@ -285,14 +285,14 @@ public class WSProcessor {
 	}
 
 	/** 
-	 * A private helper method encrypting the handshake sequence provided as the first parameter. The second parameter is the encryption method.
+	 * A protected helper method encrypting the handshake sequence provided as the first parameter. The second parameter is the encryption method.
 	 *
 	 * @param message The message representing the handshake sequence. 
 	 * @param algorithm The encryption method of choice. For Websocket it is SHA-1.
 	 * @return A byte array of the encrypted handshake sequence, or null if something is wrong.
 	 * @exception java.security.NoSuchAlgorithmException If the encryption algorithm is not available.
 	 */
-	byte[] messageDigest(String message, String algorithm) {
+	protected byte[] messageDigest(String message, String algorithm) {
 		try {
 			java.security.MessageDigest md = java.security.MessageDigest.getInstance(algorithm);
 			md.update(message.getBytes());
@@ -304,7 +304,7 @@ public class WSProcessor {
 	}
 
 	/**
-	 * A private helper method generating the byte array to be sent back to the client, including all the necessary leading and tailing bytes.
+	 * A protected helper method generating the byte array to be sent back to the client, including all the necessary leading and tailing bytes.
 	 * <p>
 	 * Code based on http://code.google.com/p/jfraggws/source/browse/trunk/src/GoodExample/JfragGWs.java
 	 *
@@ -312,7 +312,7 @@ public class WSProcessor {
 	 * @return The byte array of the message, null if something is wrong. 
 	 * @exception UnsupportedEncodingException If the encoding method is not supported. For Websocket it's UTF-8.
 	 */
-	private byte[] generateByteToClient(String msg) throws UnsupportedEncodingException {
+	protected byte[] generateByteToClient(String msg) throws UnsupportedEncodingException {
 		if(isDebug) System.out.println("Sending this to client: "+msg);
 
 		byte[] msgInBytes = msg.getBytes("UTF-8");
@@ -349,24 +349,13 @@ public class WSProcessor {
 		return someDataByteArray;
 	}
 
-	/**
-	 * A private utility method returning the bit at a certain position, from least significant bit of the byte.
-	 * 
-	 * @param b The byte being examined.
-	 * @param pos The position of the bit inside the byte.
-	 * @ return True if 1, false if 0.
-	 */
-	private boolean bitAt(byte b, int pos) {
-		return ((b & (1 << pos)) != 0);
-	} 
-
 	/** 
-	 * A private utility method returning the payload length as a long, which can either be 7-bit, 16-bit, or 64-bit.
+	 * A protected utility method returning the payload length as a long, which can either be 7-bit, 16-bit, or 64-bit.
 	 *
 	 * @param bArray The unmasked byte array of the data sent by the client.
 	 * @return The length of the payload sent by the client.
 	 */
-	private long getPayloadLength(byte[] bArray) {
+	protected long getPayloadLength(byte[] bArray) {
 		//first get the value from the 7 bits of the payload length in the 2nd byte
 		long payloadLength = 0;
 		for(int i=6; i>=0; i--) {
@@ -399,23 +388,23 @@ public class WSProcessor {
 	}
 
 	/** 
-	 * A utility method returning the opcode as an int, which is the last 4 bits of the first byte.
+	 * A protected utility method returning the opcode as an int, which is the last 4 bits of the first byte.
 	 *
 	 * @param b The byte being examined.
 	 */
-	private int getOpcode(byte b) {
+	protected int getOpcode(byte b) {
 		return b & 0xF;
 	}
 
 	/**
-	 * A private utility method returning the masking-key, assuming there is one.
+	 * A protected utility method returning the masking-key, assuming there is one.
 	 * <p>
 	 * Strangely sometimes the payload length doesn't match with the packet length, in this case just return null.
 	 *
 	 * @param bArray The data sent by the client, in the form of a byte array.
 	 * @return The masking key being used to unmasking the message part of the data.
 	 */ 
-	private byte[] getMaskingKey(byte[] bArray) {
+	protected byte[] getMaskingKey(byte[] bArray) {
 
 		if(isDebug) System.out.println("getting masking key");
 
@@ -453,7 +442,7 @@ public class WSProcessor {
 	}
 
 	/** 
-	 * A private utility function decoding message from client.
+	 * A protected utility function decoding message from client.
 	 * <p>
 	 * For some reason sometimes the payloadLength is longer than the bArray, not sure why as it works most of the time,
 	 * so for now I'm just skipping those that will cause ArrayIndexOutOfBoundException.
@@ -462,7 +451,7 @@ public class WSProcessor {
 	 * @param maskingKey The key used to unmask the message from the client, in the form of a byte array.
 	 * @return The decoded message sent by the client, in the form of a byte array.
 	 */
-	private byte[] decodeMessage(byte[] bArray, byte[] maskingKey) {
+	protected byte[] decodeMessage(byte[] bArray, byte[] maskingKey) {
 
 		if(isDebug) System.out.println("decoding message");
 
@@ -492,6 +481,17 @@ public class WSProcessor {
 		//System.out.println("done decoding");
 		return decoded;
 	}
+	
+	/**
+	 * A public static utility method returning the bit at a certain position, from least significant bit of the byte.
+	 * 
+	 * @param b The byte being examined.
+	 * @param pos The position of the bit inside the byte.
+	 * @ return True if 1, false if 0.
+	 */
+	public static boolean bitAt(byte b, int pos) {
+		return ((b & (1 << pos)) != 0);
+	} 
 
 	/**
 	 * return the version of the library.
