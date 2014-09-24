@@ -11,9 +11,11 @@ The 3 main files are
 2. WSBoostrap.html
 3. SingleClientSample.pde
 
-### WSProcessor.java ###
+### WSProcessor.java (source) ###
 
 The class that is used by the Processing application acting as a server. Does all the connection, hand-shaking to get the connection going. Then provides a send and a receive methods to transmit Websocket packets to and from the clients. Check out the example file to see how it is used.
+
+This is the source code file and is for reference only. The .jar is what you will actually be using.
 
 ### WSBootstrap.html ###
 
