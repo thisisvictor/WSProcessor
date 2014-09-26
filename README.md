@@ -1,7 +1,7 @@
 WSProcessor
 ===========
 
-The following describes the general structure of this library and what the files are for.
+The following describes the general structure of this Processing library and what the files are for.
 
 Created by Victor Cheung some time in May 2014.
 
@@ -28,6 +28,8 @@ The example Processing sketch that acts as the Websocket server. Read the commen
 ## Instructions ##
 
 The example here illustrates how the library works together with a few other files.
+
+Since it is a Processing library, the first thing you'll need to do is to install Processing (http://processing.org/). Then you'll need to manually install this library as a Contributed Library (https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library-%5BDRAFT%5D). Essentially it's just a matter of copying & pasting the library folder into a specific folder. Restart your Processing IDE and you are good to go. No extra libraries are required.
 
 To set up, place the WSBootstrap.html in an http server, make this file publicly accessible.
 Look for the statement "var ws = new WebSocket("ws://aaa.bbb.ccc.ddd:eeee");", 
